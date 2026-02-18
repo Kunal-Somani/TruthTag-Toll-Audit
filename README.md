@@ -19,6 +19,20 @@
 
 ---
 
+## 📖 Read the Full Story on Medium
+
+Before diving into the math, here's the **"why"** behind this project.
+
+> **[How We Built a "Truth-Based" Audit Layer for India's Highway Network](https://medium.com/@ujjwal264a/how-we-built-a-truth-based-audit-layer-for-indias-highway-network-3e63dd414eed)**
+
+India's FASTag toll system is fast and efficient — but it's **blind**. It trusts whatever an RFID tag claims, even if a 12-wheel truck is carrying a tag registered for a light motor vehicle. This "Semantic Gap" between digital identity and physical reality costs toll operators crores in revenue leakage every year.
+
+This project is our answer: a **Computer Vision audit layer** that gives the toll barrier a pair of eyes — cross-checking the RFID claim against what the camera actually sees, in real time. The blog walks through the problem, the system design, and the real-world impact.
+
+*3 min read · No paywall*
+
+---
+
 ## Part 1: The Eye — HOG Feature Extraction
 
 HOG does **not** look at raw pixel values. It looks at **rates of change (derivatives)** — the edges and textures that define shape.
