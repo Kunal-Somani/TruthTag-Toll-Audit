@@ -1,6 +1,6 @@
 # tiet-ucs532p-bteam
 
-# 🧮 The Math Behind the Project: HOG + SVM Vehicle Classifier
+## 🧮 The Math Behind the Project: HOG + SVM Vehicle Classifier
 
 > A deep dive into the mathematics powering Histogram of Oriented Gradients (HOG) feature extraction and Support Vector Machine (SVM) classification.
 
