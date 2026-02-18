@@ -1,84 +1,161 @@
 # tiet-ucs532p-bteam
 
-## 📐 Mathematical Framework
+# 🧮 The Math Behind the Project: HOG + SVM Vehicle Classifier
 
-This project eschews "black-box" Deep Learning in favor of a transparent, interpretable Classical Computer Vision pipeline. The core methodology relies on **Gradient-Based Feature Extraction** coupled with **Max-Margin Statistical Classification**.
-
-### 1. Feature Extraction: Histogram of Oriented Gradients (HOG)
-
-We transform raw pixel data into a structural feature vector $\mathbf{v}$ that is invariant to illumination and small geometric deformations.
-
-#### **A. Gradient Computation**
-For every pixel $(x,y)$, we calculate the gradient vector $\nabla I(x,y)$ to capture edge intensity and direction. We use discrete derivative masks $[-1, 0, 1]$ centered at the pixel:
-
-$$
-G_x(x,y) = I(x+1, y) - I(x-1, y)
-$$
-
-$$
-G_y(x,y) = I(x, y+1) - I(x, y-1)
-$$
-
-From these partial derivatives, we compute the **Magnitude** $m$ and **Orientation** $\theta$:
-
-$$
-m(x,y) = \sqrt{G_x(x,y)^2 + G_y(x,y)^2}
-$$
-
-$$
-\theta(x,y) = \arctan\left(\frac{G_y(x,y)}{G_x(x,y)}\right)
-$$
-
-#### **B. Spatial Binning & Normalization**
-To reduce noise and dimensionality, we aggregate gradients into $8 \times 8$ pixel **cells**. Each cell accumulates a weighted vote into a 9-bin histogram based on $\theta$.
-
-To ensure robustness against lighting variations (e.g., shadows vs. sunlight), we normalize the vector $\mathbf{v}$ over larger $16 \times 16$ **blocks** using the **L2-Hys (Hysteresis) Norm**:
-
-$$
-\mathbf{v}_{norm} = \frac{\mathbf{v}}{\sqrt{||\mathbf{v}||_2^2 + \epsilon}}
-$$
-
-This results in a high-dimensional feature descriptor that represents the "shape fingerprint" of the vehicle.
+> A deep dive into the mathematics powering Histogram of Oriented Gradients (HOG) feature extraction and Support Vector Machine (SVM) classification.
 
 ---
 
-### 2. Classification: Support Vector Machine (SVM)
+## Table of Contents
 
-The extracted HOG vectors are projected into a high-dimensional space where we construct an optimal separating hyperplane between classes (e.g., *Car* vs. *Truck*).
-
-#### **A. The Optimization Problem**
-We employ a **Linear SVM** to find the weight vector $\mathbf{w}$ and bias $b$ that maximizes the geometric margin $\gamma$ between the nearest data points (Support Vectors) and the decision boundary.
-
-$$
-f(\mathbf{x}) = \text{sign}(\mathbf{w}^T \mathbf{x} + b)
-$$
-
-Mathematically, we solve the following constrained convex optimization problem:
-
-$$
-\min_{\mathbf{w}, b} \frac{1}{2} ||\mathbf{w}||^2 + C \sum_{i=1}^{N} \xi_i
-$$
-
-**Subject to:**
-$$
-y_i (\mathbf{w}^T \mathbf{x}_i + b) \geq 1 - \xi_i, \quad \xi_i \geq 0
-$$
-
-Where:
-* $\frac{1}{2} ||\mathbf{w}||^2$: Maximizes the margin (regularization).
-* $C$: Hyperparameter controlling the penalty for misclassification.
-* $\xi_i$: Slack variables allowing for non-linearly separable data (soft margin).
+- [Part 1: The Eye — HOG Feature Extraction](#part-1-the-eye--hog-feature-extraction)
+  - [Step 1: Calculating Gradients](#step-1-calculating-gradients)
+  - [Step 2: Magnitude & Orientation](#step-2-magnitude--orientation)
+  - [Step 3: Spatial Binning](#step-3-spatial-binning)
+  - [Step 4: Block Normalization](#step-4-block-normalization)
+- [Part 2: The Brain — SVM Classification](#part-2-the-brain--svm-classification)
+  - [Step 1: The Hyperplane](#step-1-the-hyperplane)
+  - [Step 2: Maximizing the Margin](#step-2-maximizing-the-margin)
+  - [Step 3: The Kernel Trick](#step-3-the-kernel-trick)
+- [Elevator Pitch Summary](#elevator-pitch-summary)
 
 ---
 
-### 3. Localization: Sliding Window & Non-Maximum Suppression (NMS)
+## Part 1: The Eye — HOG Feature Extraction
 
-To localize vehicles in the video feed, we scan the image $I$ with a fixed-size window $W$ at multiple scales.
+HOG does **not** look at raw pixel values. It looks at **rates of change (derivatives)** — the edges and textures that define shape.
 
-For a set of detected bounding boxes $B = \{b_1, b_2, ..., b_n\}$ with confidence scores $S$, we eliminate redundant overlapping boxes using **Intersection over Union (IoU)**:
+---
 
-$$
-IoU(A, B) = \frac{\text{Area}(A \cap B)}{\text{Area}(A \cup B)}
-$$
+### Step 1: Calculating Gradients
 
-We discard any box $b_j$ if $IoU(b_{best}, b_j) > \tau$ (where $\tau$ is the overlap threshold, typically 0.3), retaining only the most confident detection.
+For every pixel `(x, y)`, we compute how rapidly intensity changes in the horizontal and vertical directions using the kernel `[-1, 0, 1]`:
+
+**Horizontal Gradient:**
+
+$$G_x(x,y) = I(x+1,\, y) - I(x-1,\, y)$$
+
+**Vertical Gradient:**
+
+$$G_y(x,y) = I(x,\, y+1) - I(x,\, y-1)$$
+
+> These are first-order finite difference approximations of the image derivative.
+
+---
+
+### Step 2: Magnitude & Orientation
+
+We convert the `(Gx, Gy)` pair into polar form — a **magnitude** (edge strength) and an **angle** (edge direction):
+
+**Edge Magnitude:**
+
+$$m(x,y) = \sqrt{G_x^2 + G_y^2}$$
+
+**Edge Orientation:**
+
+$$\theta(x,y) = \arctan\!\left(\frac{G_y}{G_x}\right)$$
+
+| Value | Meaning |
+|-------|---------|
+| High `m` | Sharp edge (e.g. windshield frame) |
+| Low `m`  | Flat surface (e.g. door panel) |
+
+---
+
+### Step 3: Spatial Binning (The Histogram)
+
+Rather than tracking every pixel individually (noisy), we group pixels into **8×8 cells** and build a histogram.
+
+- **9 orientation bins** covering angles: `0°, 20°, 40°, ..., 160°`
+- Each pixel **votes** for its angle bin
+- The **vote weight = magnitude** `m`
+
+**Example:**
+```
+Strong vertical edge  → θ = 90°, m = 100  →  adds +100 to the 90° bin
+Weak diagonal edge    → θ = 45°, m = 5    →  adds +5  to the 45° bin
+```
+
+**Result:** 64 pixels → **9 numbers** describing the local shape/texture.
+
+---
+
+### Step 4: Block Normalization (Lighting Invariance)
+
+> **The Problem:** If lighting changes, all magnitudes scale proportionally — breaking the descriptor.
+
+**The Fix:** Normalize over a **16×16 block** using the **L2-norm**:
+
+$$\mathbf{v}_{\text{normalized}} = \frac{\mathbf{v}}{\sqrt{||\mathbf{v}||^2 + \epsilon}}$$
+
+**Why it works:** If the image gets darker, both numerator and denominator shrink equally — the ratio stays constant. HOG becomes **robust to shadows and illumination changes**.
+
+---
+
+## Part 2: The Brain — SVM Classification
+
+After HOG, we have a **feature vector** `x` (a long list of numbers). The SVM's job is to classify it: **Truck** or **Car**?
+
+---
+
+### Step 1: The Hyperplane (Decision Boundary)
+
+The SVM finds a **hyperplane** — a flat boundary in high-dimensional space — that separates the two classes:
+
+$$\mathbf{w} \cdot \mathbf{x} + b = 0$$
+
+| Symbol | Meaning |
+|--------|---------|
+| `w` | Weight vector (learned during training) |
+| `x` | Input HOG feature vector |
+| `b` | Bias term |
+
+---
+
+### Step 2: Maximizing the Margin
+
+Many hyperplanes can separate two classes. SVM picks the **optimal** one — the hyperplane with the **maximum margin** (widest gap between classes).
+
+The distance from the hyperplane to the nearest data point is:
+
+$$\text{margin} = \frac{1}{||\mathbf{w}||}$$
+
+**To maximize the margin, we minimize `||w||`.**
+
+**Optimization Problem:**
+
+$$\text{Minimize} \quad \frac{1}{2}||\mathbf{w}||^2$$
+
+$$\text{Subject to:} \quad y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1 \quad \forall\, i$$
+
+> The constraint ensures every training sample is classified correctly and lies outside the margin boundary.
+
+---
+
+### Step 3: The Kernel Trick (Handling Non-Linearity)
+
+Sometimes Trucks and Cars **cannot** be separated by a straight line (e.g. a small truck looks like a large car).
+
+A **kernel function** `K(xᵢ, xⱼ)` implicitly maps data into a higher-dimensional space where a linear separator exists — **without ever computing the transformation explicitly**.
+
+| Kernel | Use Case |
+|--------|----------|
+| **Linear** | Fastest; works when data is nearly linearly separable |
+| **RBF (Gaussian)** | More accurate; handles complex, non-linear boundaries |
+
+$$K_{\text{RBF}}(\mathbf{x}_i, \mathbf{x}_j) = \exp\!\left(-\gamma\,||\mathbf{x}_i - \mathbf{x}_j||^2\right)$$
+
+---
+
+## Elevator Pitch Summary
+
+| Stage | Technical Description |
+|-------|-----------------------|
+| **Gradient Analysis** | Compute first-order derivatives `(Gx, Gy)` to capture edge intensity and orientation at every pixel |
+| **Dimensionality Reduction** | Pool gradients into histograms within 8×8 cells to create a compact, robust shape descriptor |
+| **L2-Normalization** | Normalize descriptor vectors over 16×16 blocks to ensure invariance to illumination changes |
+| **Max-Margin Classification** | SVM maps HOG vectors into high-dimensional space and finds the optimal hyperplane `w·x + b = 0` maximizing the geometric margin between classes |
+
+---
+
+> **TL;DR:** HOG turns an image into a compact description of its edges and shapes. SVM draws the best possible decision boundary in that description space to tell Trucks from Cars.
