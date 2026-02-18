@@ -21,15 +21,14 @@
 
 ## 📖 Read the Full Story on Medium
 
-Before diving into the math, here's the **"why"** behind this project.
+Before diving into the math, here's the **"why"** and **"how"** behind this project — written by the team.
 
-> **[How We Built a "Truth-Based" Audit Layer for India's Highway Network](https://medium.com/@ujjwal264a/how-we-built-a-truth-based-audit-layer-for-indias-highway-network-3e63dd414eed)**
+| | Blog | Author | What it covers |
+|--|------|--------|----------------|
+| 🛣️ | **[How We Built a "Truth-Based" Audit Layer for India's Highway Network](https://medium.com/@ujjwal264a/how-we-built-a-truth-based-audit-layer-for-indias-highway-network-3e63dd414eed)** | Ujjwal | The problem — FASTag's "Semantic Gap," revenue leakage, and the vision for a cross-modal verification system. *3 min read* |
+| 🔬 | **[Visual Auditing for Intelligent Transport Systems: A Classical CV Approach to Fraud Detection](https://medium.com/@kunal120222/visual-auditing-for-intelligent-transport-systems-a-classical-computer-vision-approach-to-fraud-cc70c7620357)** | Kunal | The engineering — why we chose Classical CV over Deep Learning, the full HOG+SVM pipeline, and how we tackled real-world challenges like occlusion and the "Van vs. Pickup" dilemma. *4 min read* |
 
-India's FASTag toll system is fast and efficient — but it's **blind**. It trusts whatever an RFID tag claims, even if a 12-wheel truck is carrying a tag registered for a light motor vehicle. This "Semantic Gap" between digital identity and physical reality costs toll operators crores in revenue leakage every year.
-
-This project is our answer: a **Computer Vision audit layer** that gives the toll barrier a pair of eyes — cross-checking the RFID claim against what the camera actually sees, in real time. The blog walks through the problem, the system design, and the real-world impact.
-
-*3 min read · No paywall*
+> **Recommended reading order:** Ujjwal's blog first (the *why*), then Kunal's (the *how*).
 
 ---
 
