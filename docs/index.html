@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vehicle Classification (Car vs Truck) – Classical CV + SVM</title>
+  <title>TruthTag — Highway Audit System</title>
 
-  <!-- MathJax for LaTeX equations -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
@@ -14,113 +16,629 @@
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; max-width: 900px; }
-    h1, h2 { line-height: 1.2; }
-    code { background: #f2f2f2; padding: 2px 6px; border-radius: 4px; }
-    .box { background: #fafafa; border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+    :root {
+      --bg: #0a0c0f;
+      --bg2: #111418;
+      --bg3: #181d23;
+      --amber: #f59e0b;
+      --amber-dim: #92600a;
+      --amber-glow: rgba(245,158,11,0.15);
+      --red: #ef4444;
+      --green: #22c55e;
+      --text: #e8e4dc;
+      --muted: #6b7280;
+      --border: rgba(245,158,11,0.2);
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── SCANLINE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 40px; height: 1px;
+      background: var(--amber);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      max-width: 800px;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 span {
+      color: var(--amber);
+      position: relative;
+    }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      color: #9ca3af;
+      max-width: 600px;
+      margin-bottom: 48px;
+      line-height: 1.8;
+      font-family: var(--mono);
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    /* ── GRID LAYOUT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 60px;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section {
+      padding: 100px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 48px;
+      line-height: 1.1;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── PROBLEM / SOLUTION BLOCKS ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 60px;
+    }
+
+    .col-block {
+      background: var(--bg2);
+      padding: 40px;
+    }
+
+    .col-block h3 {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .col-block.problem h3 { color: var(--red); }
+    .col-block.solution h3 { color: var(--green); }
+
+    .col-block p {
+      font-size: 0.95rem;
+      color: #9ca3af;
+      line-height: 1.8;
+    }
+
+    /* ── FLOW STEPS ── */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 60px;
+    }
+
+    .flow-step {
+      background: var(--bg2);
+      padding: 36px;
+      position: relative;
+    }
+
+    .flow-step-num {
+      font-family: var(--mono);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--amber-dim);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .flow-step h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--amber);
+    }
+
+    .flow-step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-family: var(--mono);
+    }
+
+    /* ── AUDIT LOGIC BOX ── */
+    .audit-box {
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 40px;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .audit-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+    }
+    .audit-row:last-child { border-bottom: none; }
+
+    .audit-cond {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 2px;
+      white-space: nowrap;
+      color: var(--amber);
+      min-width: 220px;
+    }
+
+    .arrow { color: var(--muted); font-size: 1.2rem; }
+
+    .audit-result.ok {
+      color: var(--green);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+    .audit-result.flag {
+      color: var(--red);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── MATH PIPELINE ── */
+    .pipeline {
+      counter-reset: pipe;
+    }
+
+    .pipe-step {
+      counter-increment: pipe;
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      margin-bottom: 2px;
+      background: var(--bg2);
+      transition: background 0.2s;
+    }
+    .pipe-step:hover { background: var(--bg3); }
+
+    .pipe-num {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 32px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--amber);
+      border-right: 1px solid var(--border);
+    }
+    .pipe-num::before { content: counter(pipe, decimal-leading-zero); }
+
+    .pipe-body {
+      padding: 28px 36px;
+    }
+
+    .pipe-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .pipe-goal {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .math-box {
+      background: var(--bg);
+      border: 1px solid rgba(245,158,11,0.12);
+      border-left: 3px solid var(--amber);
+      padding: 20px 28px;
+      margin: 16px 0;
+      border-radius: 0 4px 4px 0;
+      overflow-x: auto;
+    }
+
+    .math-box .eq-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .pipe-note {
+      font-size: 0.88rem;
+      color: #9ca3af;
+      margin-top: 14px;
+      line-height: 1.7;
+    }
+
+    .code-pill {
+      font-family: var(--mono);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      border-radius: 2px;
+      color: var(--amber);
+    }
+
+    .example-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .ex-pill {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border: 1px solid;
+      border-radius: 2px;
+    }
+    .ex-pill.sunny { border-color: #92600a; color: #f59e0b; background: rgba(245,158,11,0.08); }
+    .ex-pill.cloudy { border-color: #374151; color: #6b7280; background: rgba(107,114,128,0.08); }
+    .ex-pill.normal { border-color: #166534; color: #22c55e; background: rgba(34,197,94,0.08); }
+
+    .svm-class-row {
+      display: flex;
+      gap: 2px;
+      margin-top: 20px;
+    }
+    .svm-block {
+      flex: 1;
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      border: 1px solid;
+    }
+    .svm-block.truck {
+      border-color: var(--red);
+      background: rgba(239,68,68,0.06);
+      color: var(--red);
+    }
+    .svm-block.car {
+      border-color: #3b82f6;
+      background: rgba(59,130,246,0.06);
+      color: #60a5fa;
+    }
+    .svm-block .label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    footer span { color: var(--amber); }
+
+    /* ── ANIMATION ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero > * {
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero > *:nth-child(1) { animation-delay: 0.1s; }
+    .hero > *:nth-child(2) { animation-delay: 0.25s; }
+    .hero > *:nth-child(3) { animation-delay: 0.4s; }
+    .hero > *:nth-child(4) { animation-delay: 0.55s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero, .section, footer { padding-left: 24px; padding-right: 24px; }
+      .two-col, .flow { grid-template-columns: 1fr; }
+      .pipe-step { grid-template-columns: 1fr; }
+      .pipe-num { border-right: none; border-bottom: 1px solid var(--border); padding: 12px 28px; }
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
   </style>
 </head>
 
 <body>
-  <h1>Vehicle Classification (Car vs Truck)</h1>
-  <p>
-    This project classifies vehicles captured by a fixed toll camera into two classes:
-    <b>CAR</b> or <b>TRUCK</b>. The approach avoids deep learning and instead uses
-    classical computer vision features based on image gradients (edges), followed by
-    a Support Vector Machine (SVM) classifier.
-  </p>
 
-  <h2>Processing Pipeline</h2>
-  <ul>
-    <li>Compute horizontal and vertical gradients (edge detection).</li>
-    <li>Convert gradients into edge strength (magnitude) and edge direction (orientation).</li>
-    <li>Normalize features to reduce the effect of lighting changes.</li>
-    <li>Use an SVM to classify the feature vector as CAR or TRUCK.</li>
-  </ul>
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-eyebrow">India Highway Audit System &nbsp;/ CV + SVM</div>
+    <h1>From <span>Digital Trust</span><br>to Physical Truth</h1>
+    <p class="hero-desc">
+      A computer-vision audit layer for India's FASTag toll network — detecting vehicle class mismatches in real-time to close the revenue leakage gap.
+    </p>
+    <div class="badge-row">
+      <div class="badge">Classical CV</div>
+      <div class="badge">SVM Classifier</div>
+      <div class="badge">Edge Detection</div>
+      <div class="badge">RFID Cross-Verification</div>
+    </div>
+  </section>
 
-  <h2>1) Edge Finder (Gradient Calculation)</h2>
-  <p>
-    <b>Goal:</b> Detect where the image intensity changes sharply. These changes correspond to object boundaries
-    such as the sides and roofline of a vehicle.
-  </p>
+  <hr class="divider">
 
-  <div class="box">
-    <p><b>Equations:</b></p>
-    <p>$$G_x = \text{PixelRight} - \text{PixelLeft}$$</p>
-    <p>$$G_y = \text{PixelUp} - \text{PixelDown}$$</p>
-  </div>
+  <!-- ── THE PROBLEM ── -->
+  <section class="section">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">The Semantic Gap</h2>
 
-  <p>
-    <b>Interpretation:</b> For each pixel, compare opposite neighbors.
-    A large $|G_x|$ indicates a strong vertical edge (e.g., the side of a truck).
-    A large $|G_y|$ indicates a strong horizontal edge (e.g., roofline).
-  </p>
+    <div class="two-col">
+      <div class="col-block problem">
+        <h3>⚠ Current Reality (Trust Protocol)</h3>
+        <p>India's FASTag system is <strong style="color:#e8e4dc">blind.</strong> When an RFID tag broadcasts "I am a Car," the barrier opens — even if a 12-wheel commercial truck is carrying it. The digital identity $ID_{tag}$ does not match the physical reality $ID_{phys}$. This causes crores in annual revenue leakage.</p>
+      </div>
+      <div class="col-block solution">
+        <h3>✓ Our Proposal (Truth Protocol)</h3>
+        <p>We give the toll barrier <strong style="color:#e8e4dc">a pair of eyes.</strong> A live camera feed runs through a computer vision engine in parallel with the RFID scan. The system independently determines the vehicle's actual class and audits the tag's claim before the barrier moves.</p>
+      </div>
+    </div>
 
-  <h2>2) Edge Strength & Direction (Magnitude & Orientation)</h2>
-  <p>
-    <b>Goal:</b> Convert the raw gradients into two meaningful descriptors:
-    how strong the edge is, and which direction it points.
-  </p>
+    <div class="section-label">Verification Flow</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-step-num">01</div>
+        <h4>The Claim (RFID)</h4>
+        <p>Tag broadcasts an ID. Database returns the registered vehicle class — e.g., "Light Motor Vehicle."</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">02</div>
+        <h4>The Reality (Vision)</h4>
+        <p>Camera feeds live video to our CV engine. Shape, size, and edge structure determine the actual physical class.</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">03</div>
+        <h4>The Audit (Handshake)</h4>
+        <p>Both streams are compared. A match opens the barrier; a mismatch triggers a silent alert for inspection.</p>
+      </div>
+    </div>
 
-  <div class="box">
-    <p><b>Edge Strength (Magnitude):</b></p>
-    <p>$$m = \sqrt{G_x^2 + G_y^2}$$</p>
+    <div class="audit-box">
+      <div class="section-label" style="margin-bottom:24px;">Decision Logic</div>
+      <div class="audit-row">
+        <div class="audit-cond">Claim == Reality</div>
+        <div class="arrow">→</div>
+        <div class="audit-result ok">✓ BARRIER OPENS</div>
+      </div>
+      <div class="audit-row">
+        <div class="audit-cond">Claim ≠ Reality</div>
+        <div class="arrow">→</div>
+        <div class="audit-result flag">⚑ MISMATCH ALERT — HOLD FOR INSPECTION</div>
+      </div>
+    </div>
+  </section>
 
-    <p><b>Edge Direction (Orientation):</b></p>
-    <p>$$\theta = \arctan\left(\frac{G_y}{G_x}\right)$$</p>
-  </div>
+  <hr class="divider">
 
-  <p>
-    <b>Practical note:</b> Trucks tend to produce many strong, near-vertical edges (box-like geometry).
-    Cars tend to produce more curved edges and less dominant vertical structure.
-  </p>
+  <!-- ── CV PIPELINE ── -->
+  <section class="section">
+    <div class="section-label">Computer Vision Pipeline</div>
+    <h2 class="section-title">How the Engine Works</h2>
 
-  <h2>3) Lighting Robustness (Normalization)</h2>
-  <p>
-    <b>Goal:</b> Reduce sensitivity to global brightness changes caused by sun, clouds, shadows, or time of day.
-  </p>
+    <div class="pipeline">
 
-  <div class="box">
-    <p><b>Equation:</b></p>
-    <p>$$v_{norm} = \frac{v}{\sqrt{||v||^2}}$$</p>
-  </div>
+      <!-- STEP 1 -->
+      <div class="pipe-step">
+        <div class="pipe-num"></div>
+        <div class="pipe-body">
+          <div class="pipe-title">Edge Finder — Gradient Calculation</div>
+          <div class="pipe-goal">Detect where pixel intensity changes sharply. Sharp changes = vehicle boundaries: sides, roof lines, windshields.</div>
 
-  <p>
-    <b>Interpretation:</b> Divide the feature vector by its overall energy (magnitude).
-    This keeps the relative pattern of features but removes scaling due to lighting.
-  </p>
+          <div class="math-box">
+            <div class="eq-label">Horizontal &amp; Vertical Gradients</div>
+            $$G_x = \text{PixelRight} - \text{PixelLeft}$$
+            $$G_y = \text{PixelUp} - \text{PixelDown}$$
+          </div>
 
-  <p><b>Example:</b></p>
-  <ul>
-    <li>Sunny: <code>[100, 200, 100]</code></li>
-    <li>Cloudy: <code>[10, 20, 10]</code></li>
-    <li>After normalization: both ≈ <code>[0.4, 0.8, 0.4]</code></li>
-  </ul>
+          <p class="pipe-note">
+            A large $|G_x|$ indicates a strong <em>vertical</em> edge — like the tall flat side of a truck.
+            A large $|G_y|$ indicates a strong <em>horizontal</em> edge — like a car's low roofline.
+          </p>
+        </div>
+      </div>
 
-  <h2>4) Decision Maker (Support Vector Machine – SVM)</h2>
-  <p>
-    <b>Goal:</b> Learn a separating boundary between the two classes using the extracted features.
-  </p>
+      <!-- STEP 2 -->
+      <div class="pipe-step">
+        <div class="pipe-num"></div>
+        <div class="pipe-body">
+          <div class="pipe-title">Edge Strength &amp; Direction</div>
+          <div class="pipe-goal">Convert raw gradients into two meaningful descriptors: how strong the edge is, and which direction it runs.</div>
 
-  <div class="box">
-    <p><b>Decision function:</b></p>
-    <p>$$f(x) = w \cdot x + b$$</p>
-  </div>
+          <div class="math-box">
+            <div class="eq-label">Magnitude (Strength)</div>
+            $$m = \sqrt{G_x^2 + G_y^2}$$
+          </div>
 
-  <p>
-    Where: $x$ is the feature vector extracted from the image, $w$ is the learned weight vector,
-    and $b$ is the bias term.
-  </p>
+          <div class="math-box">
+            <div class="eq-label">Orientation (Direction)</div>
+            $$\theta = \arctan\!\left(\frac{G_y}{G_x}\right)$$
+          </div>
 
-  <p><b>Classification rule:</b></p>
-  <ul>
-    <li>If $f(x) &gt; 0$ → <b>TRUCK</b></li>
-    <li>If $f(x) &lt; 0$ → <b>CAR</b></li>
-  </ul>
+          <p class="pipe-note">
+            Trucks produce many strong, near-vertical edges (box geometry). Cars produce softer, more curved edges with less dominant vertical structure. This difference drives the classifier.
+          </p>
+        </div>
+      </div>
 
-  <p>
-    The SVM learns $w$ and $b$ from labeled training examples so that the margin between classes is maximized.
-  </p>
+      <!-- STEP 3 -->
+      <div class="pipe-step">
+        <div class="pipe-num"></div>
+        <div class="pipe-body">
+          <div class="pipe-title">Lighting Robustness — Normalisation</div>
+          <div class="pipe-goal">Toll cameras face harsh variation: direct sun, cloud cover, headlights, shadows. Normalisation removes global brightness as a confound.</div>
+
+          <div class="math-box">
+            <div class="eq-label">L2 Normalisation</div>
+            $$v_{norm} = \frac{v}{\sqrt{\|v\|^2}}$$
+          </div>
+
+          <p class="pipe-note">
+            Dividing by the vector's energy preserves the <em>pattern</em> of features while eliminating lighting-scale effects:
+          </p>
+          <div class="example-row">
+            <span class="ex-pill sunny">Sunny → [100, 200, 100]</span>
+            <span class="ex-pill cloudy">Cloudy → [10, 20, 10]</span>
+            <span class="ex-pill normal">Normalised → [0.4, 0.8, 0.4]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="pipe-step">
+        <div class="pipe-num"></div>
+        <div class="pipe-body">
+          <div class="pipe-title">Decision Maker — Support Vector Machine</div>
+          <div class="pipe-goal">Learn a maximum-margin boundary between CAR and TRUCK feature spaces from labelled training examples.</div>
+
+          <div class="math-box">
+            <div class="eq-label">SVM Decision Function</div>
+            $$f(x) = w \cdot x + b$$
+          </div>
+
+          <p class="pipe-note">
+            Where $x$ is the normalised feature vector, $w$ is the learned weight vector, and $b$ is the bias. The SVM learns $w$ and $b$ to maximise the margin between classes.
+          </p>
+
+          <div class="svm-class-row">
+            <div class="svm-block truck">
+              $f(x) > 0$
+              <div class="label">→ TRUCK</div>
+            </div>
+            <div class="svm-block car">
+              $f(x) &lt; 0$
+              <div class="label">→ CAR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /pipeline -->
+  </section>
+
+  <hr class="divider">
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div>Vehicle Classification · Classical CV + SVM · Toll Audit System</div>
+    <div>Built with <span>edge gradients</span> — not deep learning.</div>
+  </footer>
 
 </body>
 </html>
