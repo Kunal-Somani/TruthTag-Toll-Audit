@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vehicle Classification (Car vs Truck) – Classical CV + SVM</title>
+
+  <!-- MathJax for LaTeX equations -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; max-width: 900px; }
+    h1, h2 { line-height: 1.2; }
+    code { background: #f2f2f2; padding: 2px 6px; border-radius: 4px; }
+    .box { background: #fafafa; border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+  </style>
+</head>
+
+<body>
+  <h1>Vehicle Classification (Car vs Truck)</h1>
+  <p>
+    This project classifies vehicles captured by a fixed toll camera into two classes:
+    <b>CAR</b> or <b>TRUCK</b>. The approach avoids deep learning and instead uses
+    classical computer vision features based on image gradients (edges), followed by
+    a Support Vector Machine (SVM) classifier.
+  </p>
+
+  <h2>Processing Pipeline</h2>
+  <ul>
+    <li>Compute horizontal and vertical gradients (edge detection).</li>
+    <li>Convert gradients into edge strength (magnitude) and edge direction (orientation).</li>
+    <li>Normalize features to reduce the effect of lighting changes.</li>
+    <li>Use an SVM to classify the feature vector as CAR or TRUCK.</li>
+  </ul>
+
+  <h2>1) Edge Finder (Gradient Calculation)</h2>
+  <p>
+    <b>Goal:</b> Detect where the image intensity changes sharply. These changes correspond to object boundaries
+    such as the sides and roofline of a vehicle.
+  </p>
+
+  <div class="box">
+    <p><b>Equations:</b></p>
+    <p>$$G_x = \text{PixelRight} - \text{PixelLeft}$$</p>
+    <p>$$G_y = \text{PixelUp} - \text{PixelDown}$$</p>
+  </div>
+
+  <p>
+    <b>Interpretation:</b> For each pixel, compare opposite neighbors.
+    A large $|G_x|$ indicates a strong vertical edge (e.g., the side of a truck).
+    A large $|G_y|$ indicates a strong horizontal edge (e.g., roofline).
+  </p>
+
+  <h2>2) Edge Strength & Direction (Magnitude & Orientation)</h2>
+  <p>
+    <b>Goal:</b> Convert the raw gradients into two meaningful descriptors:
+    how strong the edge is, and which direction it points.
+  </p>
+
+  <div class="box">
+    <p><b>Edge Strength (Magnitude):</b></p>
+    <p>$$m = \sqrt{G_x^2 + G_y^2}$$</p>
+
+    <p><b>Edge Direction (Orientation):</b></p>
+    <p>$$\theta = \arctan\left(\frac{G_y}{G_x}\right)$$</p>
+  </div>
+
+  <p>
+    <b>Practical note:</b> Trucks tend to produce many strong, near-vertical edges (box-like geometry).
+    Cars tend to produce more curved edges and less dominant vertical structure.
+  </p>
+
+  <h2>3) Lighting Robustness (Normalization)</h2>
+  <p>
+    <b>Goal:</b> Reduce sensitivity to global brightness changes caused by sun, clouds, shadows, or time of day.
+  </p>
+
+  <div class="box">
+    <p><b>Equation:</b></p>
+    <p>$$v_{norm} = \frac{v}{\sqrt{||v||^2}}$$</p>
+  </div>
+
+  <p>
+    <b>Interpretation:</b> Divide the feature vector by its overall energy (magnitude).
+    This keeps the relative pattern of features but removes scaling due to lighting.
+  </p>
+
+  <p><b>Example:</b></p>
+  <ul>
+    <li>Sunny: <code>[100, 200, 100]</code></li>
+    <li>Cloudy: <code>[10, 20, 10]</code></li>
+    <li>After normalization: both ≈ <code>[0.4, 0.8, 0.4]</code></li>
+  </ul>
+
+  <h2>4) Decision Maker (Support Vector Machine – SVM)</h2>
+  <p>
+    <b>Goal:</b> Learn a separating boundary between the two classes using the extracted features.
+  </p>
+
+  <div class="box">
+    <p><b>Decision function:</b></p>
+    <p>$$f(x) = w \cdot x + b$$</p>
+  </div>
+
+  <p>
+    Where: $x$ is the feature vector extracted from the image, $w$ is the learned weight vector,
+    and $b$ is the bias term.
+  </p>
+
+  <p><b>Classification rule:</b></p>
+  <ul>
+    <li>If $f(x) &gt; 0$ → <b>TRUCK</b></li>
+    <li>If $f(x) &lt; 0$ → <b>CAR</b></li>
+  </ul>
+
+  <p>
+    The SVM learns $w$ and $b$ from labeled training examples so that the margin between classes is maximized.
+  </p>
+
+</body>
+</html>
