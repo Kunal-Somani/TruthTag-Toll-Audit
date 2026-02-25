@@ -23,12 +23,16 @@
 
 Before diving into the math, here's the **"why"** and **"how"** behind this project — written by the team.
 
-| | Blog | Author | What it covers |
-|--|------|--------|----------------|
-| 🛣️ | **[How We Built a "Truth-Based" Audit Layer for India's Highway Network](https://medium.com/@ujjwal264a/how-we-built-a-truth-based-audit-layer-for-indias-highway-network-3e63dd414eed)** | Ujjwal | The problem — FASTag's "Semantic Gap," revenue leakage, and the vision for a cross-modal verification system. *3 min read* |
-| 🔬 | **[Visual Auditing for Intelligent Transport Systems: A Classical CV Approach to Fraud Detection](https://medium.com/@kunal120222/visual-auditing-for-intelligent-transport-systems-a-classical-computer-vision-approach-to-fraud-cc70c7620357)** | Kunal | The engineering — why we chose Classical CV over Deep Learning, the full HOG+SVM pipeline, and how we tackled real-world challenges like occlusion and the "Van vs. Pickup" dilemma. *4 min read* |
+| # | Blog | Author | What it covers |
+|---|------|--------|----------------|
+| 1 | 🛣️ **[How We Built a "Truth-Based" Audit Layer for India's Highway Network](https://medium.com/@ujjwal264a/how-we-built-a-truth-based-audit-layer-for-indias-highway-network-3e63dd414eed)** | Ujjwal | The problem — FASTag's "Semantic Gap," revenue leakage, and the case for a cross-modal visual verification system. *3 min read* |
+| 2 | 🔬 **[Visual Auditing for Intelligent Transport Systems: A Classical CV Approach to Fraud Detection](https://medium.com/@kunal120222/visual-auditing-for-intelligent-transport-systems-a-classical-computer-vision-approach-to-fraud-cc70c7620357)** | Kunal | The engineering — why Classical CV over Deep Learning, the full HOG+SVM pipeline, and real-world challenges like occlusion and the "Van vs. Pickup" dilemma. *4 min read* |
+| 3 | 🎥 **[Extracting Vehicles from Highway Video using MOG2 and Morphology](https://medium.com/@ujjwal264a/extracting-vehicles-from-highway-video-using-mog2-and-morphology-4a9c54ed421e)** | Ujjwal | How to separate moving vehicles from a static road background using Gaussian Mixture Models and morphological cleanup — no neural nets. *2 min read* |
+| 4 | 🎯 **[Building a Centroid Tracker and Virtual Tripwire for Vehicle Cropping in OpenCV](https://medium.com/@ujjwal264a/building-a-centroid-tracker-and-virtual-tripwire-for-vehicle-cropping-in-opencv-ff28e969d778)** | Ujjwal | Assigning persistent IDs to moving blobs using Euclidean distance, and auto-cropping clean vehicle images as they cross a virtual scanline. *2 min read* |
+| 5 | 🔜 *Coming soon* | Kunal | — |
+| 6 | 🔜 *Coming soon* | Kunal | — |
 
-> **Recommended reading order:** Ujjwal's blog first (the *why*), then Kunal's (the *how*).
+> **Recommended reading order:** Follow the numbers — they trace the project from concept → system design → detection → tracking → classification.
 
 ---
 
