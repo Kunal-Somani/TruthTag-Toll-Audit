@@ -38,7 +38,6 @@ def get_hog_fingerprint(image_path, visualize=True):
         ax2.set_title('HOG Fingerprint (Gradients)')
         plt.show()
 
-    print(f"Feature Vector Length: {len(features)} numbers")
     return features
 
 if __name__ == "__main__":

@@ -71,8 +71,8 @@ def process_dataset(source_folder, output_folder):
 
 if __name__ == "__main__":
     # Point this to where you downloaded the dataset
-    SOURCE_DIR = 'dataset/train'  
+    SOURCE_DIR = '../dataset/test'  
     # Where you want the perfectly cropped, resized images to go
-    OUTPUT_DIR = 'dataset/cropped_data' 
+    OUTPUT_DIR = '../dataset/cropped_test_data' 
     
     process_dataset(SOURCE_DIR, OUTPUT_DIR)
