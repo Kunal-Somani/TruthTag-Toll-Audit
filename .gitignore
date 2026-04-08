@@ -1,3 +1,8 @@
 dataset/
 *.pkl
 __pycache__/
+dataset.zip
+outputs.zip
+venv/
+.vscode/
+*.npz
