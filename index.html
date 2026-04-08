@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Modal Vehicle Verifier | B-Team</title>
+    <style>
+        :root {
+            --bg-light: #f8fafc; /* Very light modern background */
+            --text-dark: #1e293b;
+            --text-light: #ffffff;
+            
+            /* Light Pastels */
+            --light-pastel-1: #e0f2fe; /* Sky Blue */
+            --light-pastel-2: #fce7f3; /* Pink */
+            
+            /* Medium-Dark Pastels */
+            --med-dark-pastel-1: #818cf8; /* Indigo */
+            --med-dark-pastel-2: #34d399; /* Emerald/Mint */
+            
+            --node-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            background-color: #e2e8f0;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .pipeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 90%;
+            max-width: 850px;
+            padding-bottom: 4rem;
+            margin-top: 2rem;
+        }
+
+        /* The Nodes */
+        .node {
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--node-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .node:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .node h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .node code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        /* Alternating Colors & Text Colors */
+        
+        /* 1. Light Pastel */
+        .node:nth-child(1) {
+            background-color: var(--light-pastel-1);
+            color: var(--text-dark);
+            border-left: 8px solid #38bdf8;
+        }
+        .node:nth-child(1) h2 { border-color: rgba(0,0,0,0.1); }
+
+        /* 2. Medium-Dark Pastel */
+        .node:nth-child(3) {
+            background-color: var(--med-dark-pastel-1);
+            color: var(--text-light);
+            border-left: 8px solid #4f46e5;
+        }
+
+        /* 3. Light Pastel */
+        .node:nth-child(5) {
+            background-color: var(--light-pastel-2);
+            color: var(--text-dark);
+            border-left: 8px solid #f472b6;
+        }
+        .node:nth-child(5) h2 { border-color: rgba(0,0,0,0.1); }
+
+        /* 4. Medium-Dark Pastel */
+        .node:nth-child(7) {
+            background-color: var(--med-dark-pastel-2);
+            color: var(--text-light);
+            border-left: 8px solid #059669;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #cbd5e1;
+            margin: -0.5rem 0;
+        }
+
+        .math-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .light-math {
+            background: rgba(0,0,0,0.05);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚦 FASTag Fraud Detection</h1>
+        <p class="subtitle">A Cross-Modal Visual Verification System built with Classical CV</p>
+        <span class="badge">Engineered by B-Team</span>
+    </header>
+
+    <div class="pipeline-container">
+        
+        <div class="node">
+            <h2>📦 1. Data Processing (src/01_explore_dataset.py)</h2>
+            <p>Our pipeline targets structural taxonomy rather than standard objects. We isolated and categorized thousands of top-down toll plaza images into three distinct classes: <code>f1 (Car)</code>, <code>f4 (Bus)</code>, and <code>f5 (Truck)</code>. Before extraction, every single ROI is forced into a standard grayscale <code>64x128</code> matrix to normalize aspect ratios.</p>
+        </div>
+
+        <div class="arrow">⬇</div>
+
+        <div class="node">
+            <h2>📐 2. Structural Fingerprinting (src/02_hog_extraction.py)</h2>
+            <p>Raw pixels are highly susceptible to lighting variance and color noise. We utilize <strong>Histogram of Oriented Gradients (HOG)</strong> to calculate first-order finite difference approximations (Gx, Gy) of the image derivative.</p>
+            <div class="math-box">
+                <strong>Parameters:</strong> 9 orientation bins, 8x8 pixels per cell, and 16x16 block normalization (L2-Hys). <br>
+                <strong>Result:</strong> Each vehicle is compressed into a robust, 3,780-length 1D mathematical feature vector representing pure shape and edge geometry.
+            </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+
+        <div class="node">
+            <h2>🧠 3. Maximum-Margin Classification (src/03_train_svm.py)</h2>
+            <p>The 3,780-length feature matrices are passed through a <code>StandardScaler</code> to ensure zero-mean unit-variance, then fed into a <strong>Linear Support Vector Machine (LinearSVC)</strong>. Because our dataset has a severe 33:1 imbalance (Cars vs. Buses), we applied <code>class_weight='balanced'</code> to heavily penalize misclassifying the minority classes.</p>
+            <div class="math-box light-math">
+                <strong>Math:</strong> The SVM maps the HOG vectors into high-dimensional space to find the optimal hyperplane <code>w·x + b = 0</code> that maximizes the margin between classes.
+            </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+
+        <div class="node">
+            <h2>🔀 4. Cross-Modal Verifier (app.py & src/07)</h2>
+            <p>The core logic of our system is a cross-modal verification layer. During inference, we run a <code>softmax()</code> function over the SVM's <code>decision_function</code> to generate a 0-100% confidence probability.</p>
+            <p>If the physical visual prediction (e.g., "Truck") contradicts the declared RFID FASTag class (e.g., "Car" tag to pay less), the system instantly calculates a <strong>Fraud Score</strong> and flags the vehicle for auditing.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
