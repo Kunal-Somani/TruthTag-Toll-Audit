@@ -10,7 +10,7 @@ Below is the step-by-step math performed on your image, translated into plain En
 ## 1. Image Preprocessing (Standardizing the Input)
 Before we look for features, we have to make sure every image is mathematically comparable.
 
-![Original Captured Image](images/step1_original.png)
+![Original Captured Image](step1_original.png)
 
 ### A. Grayscale Conversion
 Images start with 3 color channels (Red, Green, Blue). We immediately flatten this into a single layer of brightness (grayscale).
@@ -19,14 +19,14 @@ Images start with 3 color channels (Red, Green, Blue). We immediately flatten th
 
 **Why?** Color is unreliable (a white car and a white truck share the same color). The *shape and edges* of a vehicle matter much more than its color. Grayscale removes this noise and reduces the data to process by 3x!
 
-![Grayscale Converted Image](images/step2_grayscale.png)
+![Grayscale Converted Image](step2_grayscale.png)
 
 ### B. Size Normalization (Resizing)
 Every vehicle image is squished or stretched to exactly **64 pixels wide by 128 pixels tall**. This creates a fixed grid of 8,192 pixels.
 
 **Why?** Machine learning models require completely standardized inputs. If you feed in a 4K image and a blurry 480p image, the equation lengths won't match. 64x128 provides just enough detail to see edges, without overloading the computer.
 
-![Resized 64x128 Image](images/step3_resized.png)
+![Resized 64x128 Image](step3_resized.png)
 
 ---
 
@@ -47,7 +47,7 @@ Using standard trigonometry, we turn $dx$ and $dy$ into an arrow (a vector).
 
 **Why?** To identify objects, we need to know not just *that* an edge exists, but *what kind* of edge it is. A truck has many strong horizontal and vertical edges (boxy shape), while a car might have more angled edges (sloped windshield).
 
-![Computed Gradients (dx, dy) and Magnitude](images/step4_gradients.png)
+![Computed Gradients (dx, dy) and Magnitude](step4_gradients.png)
 
 ### C. Creating the "Histogram" (The 8x8 Cells)
 We chop the entire image into tiny $8 \times 8$ pixel squares (cells).
@@ -70,7 +70,7 @@ We flatten all these normalized blocks into one massive list of numbers.
 * Number of blocks $\times$ 4 cells per block $\times$ 9 bins per cell = **3,780 numbers!**
 The image has now been completely transformed from 8,192 pixels into a **1-Dimensional Vector of 3,780 features.**
 
-![Final HOG Feature Descriptor Visualization](images/step5_hog.png)
+![Final HOG Feature Descriptor Visualization](step5_hog.png)
 
 ---
 
@@ -95,7 +95,7 @@ This generates three raw "Distance Scores" representing how far the image is fro
 
 **Why an SVM and a Hyperplane?** Linear SVC is extremely fast and memory-efficient compared to deep learning models. Instead of trying to deeply understand what a "Car" is, it just efficiently draws a literal line in space and answers "Which side of the line are you on?". Perfect for fast, low-latency operations!
 
-![SVM Hyperplane Visualized](images/step6_hyperplane.png)
+![SVM Hyperplane Visualized](step6_hyperplane.png)
 
 *(Note: The graph above is a 2D synthetic visualization. Our real dataset operates in 3,780 dimensions, which is impossible to draw, but the math is exactly the same!)*
 **How to explain this graph in your presentation:**
@@ -112,7 +112,7 @@ This gives us our final **Confidence Score** (e.g. 94.2% Car).
 
 **Why Softmax?** Raw distance scores mean nothing intuitively to a human operator. Softmax beautifully translates mathematical distances into intuitive human probabilities. Furthermore, using Euler's number ($e$) exponentially punishes unlikely classes, making the final prediction more decisive.
 
-![Softmax Conversion Chart](images/step7_softmax.png)
+![Softmax Conversion Chart](step7_softmax.png)
 
 ---
 
