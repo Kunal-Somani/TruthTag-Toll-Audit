@@ -51,7 +51,7 @@ Using standard trigonometry, we turn $dx$ and $dy$ into an arrow (a vector).
 
 ### C. Creating the "Histogram" (The 8x8 Cells)
 We chop the entire image into tiny $8 \times 8$ pixel squares (cells).
-Inside each cell, there are 64 pixels. Each pixel looks at its Angle, and puts its Magnitude into one of **9 "bins"** (0°, 20°, 40°, up to 160°). Because the *gradient* points perpendicular to the edge itself, a **horizontal edge** creates a vertical gradient, adding its magnitude to the **90° bin**. A **vertical edge** creates a horizontal gradient, adding to the **0° bin**!
+Inside each cell, there are 64 pixels. Each pixel looks at its Angle, and puts its Magnitude into one of **9 "bins"** . Because the *gradient* points perpendicular to the edge itself, a **horizontal edge** creates a vertical gradient, adding its magnitude to the **90° bin**. A **vertical edge** creates a horizontal gradient, adding to the **0° bin**!
 This creates a simple 9-number summary (Histogram) for that cell indicating where the gradients (and therefore edges) are pointing.
 
 **Why?** Looking at every single pixel is too noisy. Grouping pixels into an $8 \times 8$ cell summarizes the *dominant* edge direction in that small patch, handling slight misalignments in the image.
