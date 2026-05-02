@@ -19,10 +19,11 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
 
 # Config (match other scripts)
-TEST_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_test_data"
-MODEL_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\hog_svm_model.joblib"
-SCALER_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\scaler.joblib"
-OUT_DIR = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\metrics"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_test_data")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "hog_svm_model.joblib")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.joblib")
+OUT_DIR = os.path.join(BASE_DIR, "outputs", "metrics")
 CLASS_MAP = {"f1": 0, "f4": 1, "f5": 2}
 LABEL_NAMES = ["Car", "Bus", "Truck"]
 

@@ -19,8 +19,9 @@ from importlib import import_module
 VERIFIER_MODULE = 'src.07_cross_modal_verifier'
 VERIFIER_FUNC = 'verify'
 
-TEST_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_test_data"
-OUT_CSV = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\metrics\audit_report.csv"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_test_data")
+OUT_CSV = os.path.join(BASE_DIR, "outputs", "metrics", "audit_report.csv")
 CLASS_FOLDERS = {'f1': 'Car', 'f4': 'Bus', 'f5': 'Truck'}
 INJECT_FRAUD_RATE = 0.05  # fraction of samples where RFID claim is intentionally wrong
 

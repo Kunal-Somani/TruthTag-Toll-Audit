@@ -34,11 +34,12 @@ from sklearn.metrics import (classification_report, confusion_matrix,
                              accuracy_score)
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
-TRAIN_FEATURES = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\features\hog_features.npz"
-TEST_FEATURES  = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\features\hog_features_test.npz"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TRAIN_FEATURES = os.path.join(BASE_DIR, "outputs", "features", "hog_features.npz")
+TEST_FEATURES  = os.path.join(BASE_DIR, "outputs", "features", "hog_features_test.npz")
 
-MODEL_OUT_DIR  = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models"
-METRICS_OUT    = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\metrics"
+MODEL_OUT_DIR  = os.path.join(BASE_DIR, "models")
+METRICS_OUT    = os.path.join(BASE_DIR, "outputs", "metrics")
 
 # Label index → name mapping must match what 02_hog_extraction.py assigned
 # 02 iterates CLASS_MAP in order: f1=Car(0), f4=Bus(1), f5=Truck(2)

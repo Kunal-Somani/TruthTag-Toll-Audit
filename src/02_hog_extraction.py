@@ -19,10 +19,11 @@ import cv2
 import numpy as np
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
-TRAIN_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_data"
-TEST_ROOT  = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_test_data"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TRAIN_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_data")
+TEST_ROOT  = os.path.join(BASE_DIR, "dataset", "cropped_test_data")
 
-OUTPUT_DIR = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\features"
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs", "features")
 
 CLASS_MAP = {
     "f1": 0,   # Car

@@ -14,17 +14,18 @@ import seaborn as sns
 from tqdm import tqdm
 
 # CONFIG - must match training mapping/order used in 02_hog_extraction.py
-DATASET_TEST_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_test_data"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATASET_TEST_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_test_data")
 CLASS_MAP = {
     "f1": "Car",
     "f4": "Bus",
     "f5": "Truck",
 }
-MODEL_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\hog_svm_model.joblib"
-SCALER_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\scaler.joblib"
-OUT_DIR = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\metrics"
+MODEL_PATH = os.path.join(BASE_DIR, "models", "hog_svm_model.joblib")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.joblib")
+OUT_DIR = os.path.join(BASE_DIR, "outputs", "metrics")
 os.makedirs(OUT_DIR, exist_ok=True)
-FEATURES_TEST_NPZ = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\features\hog_features_test.npz"
+FEATURES_TEST_NPZ = os.path.join(BASE_DIR, "outputs", "features", "hog_features_test.npz")
 
 # HOG params
 win_size = (64, 128)

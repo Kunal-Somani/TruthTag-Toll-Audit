@@ -13,8 +13,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Paths and HOG params (match other scripts)
-TEST_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_test_data"
-OUT_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\metrics\hog_visualization.png"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_test_data")
+OUT_PATH = os.path.join(BASE_DIR, "outputs", "metrics", "hog_visualization.png")
 CLASS_MAP = {"f1": "Car", "f4": "Bus", "f5": "Truck"}
 
 WIN_SIZE = (64, 128)

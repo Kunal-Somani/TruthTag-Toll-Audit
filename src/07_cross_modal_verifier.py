@@ -14,8 +14,9 @@ import cv2
 import numpy as np
 import joblib
 
-MODEL_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\hog_svm_model.joblib"
-SCALER_PATH = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\models\scaler.joblib"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "hog_svm_model.joblib")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.joblib")
 
 # HOG params (must match training)
 WIN_SIZE = (64, 128)

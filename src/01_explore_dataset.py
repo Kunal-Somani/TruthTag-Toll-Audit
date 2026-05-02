@@ -21,7 +21,8 @@ import matplotlib.pyplot as plt
 
 # ── CONFIG ──────────────────────────────────────────────────────────────────
 # Change this to wherever your dataset lives relative to where you run the script
-DATASET_ROOT = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\dataset\cropped_data"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATASET_ROOT = os.path.join(BASE_DIR, "dataset", "cropped_data")
 
 CLASS_MAP = {
     "f1": "Car",
@@ -29,7 +30,7 @@ CLASS_MAP = {
     "f5": "Truck",
 }
 
-OUTPUT_DIR = r"C:\Users\ujjwa\OneDrive\Desktop\tiet-ucs532p-bteam\outputs\exploration"
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs", "exploration")
 # ─────────────────────────────────────────────────────────────────────────────
 
 
