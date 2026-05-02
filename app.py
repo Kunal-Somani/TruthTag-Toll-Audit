@@ -8,15 +8,15 @@ import os
 # ---------------------------------------------------------
 # Sidebar Configuration
 # ---------------------------------------------------------
-st.set_page_config(page_title="Cross-Modal Verifier", layout="wide")
+st.set_page_config(page_title="TruthTag", layout="wide")
 
-st.sidebar.title("Cross-Modal Vehicle Verification System")
+st.sidebar.title("TruthTag Toll Audit")
 st.sidebar.subheader("Team: B-Team")
 st.sidebar.markdown("""
 **About the Project:**
 This system detects FASTag toll fraud by comparing the declared RFID tag class with the actual visual class of the vehicle. 
 
-If a truck enters a toll using a car FASTag to pay less, this cross-modal verification system flags it automatically!
+If a truck enters a toll using a car FASTag to pay less, TruthTag flags it automatically!
 
 *Classical CV only — no neural networks.*
 """)
@@ -102,7 +102,7 @@ with col1:
         * **Image Preprocessing:** The image is converted to grayscale and resized to a standard 64x128.
         * **HOG Feature Extraction:** We extract Histogram of Oriented Gradients (HOG) features to capture the vehicle's shape and edges.
         * **Linear SVM Classification:** A Support Vector Machine classifies the HOG features into Car, Bus, or Truck.
-        * **Cross-Modal Verification:** If the visual prediction doesn't match the RFID FASTag class, fraud is flagged!
+        * **TruthTag Verification:** If the visual prediction doesn't match the RFID FASTag class, fraud is flagged!
         """)
 
 # RIGHT PANEL

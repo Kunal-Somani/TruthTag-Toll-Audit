@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cross-Modal Vehicle Verifier | B-Team</title>
+    <title>TruthTag | B-Team</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -232,7 +232,7 @@ clf.fit(X_train_sc, y_train)</code></pre>
         <div class="arrow">⬇</div>
 
         <div class="node">
-            <h2>🔀 4. Cross-Modal Verifier & Results</h2>
+            <h2>🔀 4. TruthTag Verifier & Results</h2>
             <p>During inference, our <code>07_cross_modal_verifier.py</code> runs a softmax over the SVM's decision boundaries. If the visual prediction contradicts the declared RFID FASTag class, a <b>Fraud Score</b> is generated. Evaluated against 1,510 strictly unseen test images, the model proved highly effective at catching heavy vehicle fraud.</p>
             
             <div class="vis-container" style="margin-top: 1.5rem;">
