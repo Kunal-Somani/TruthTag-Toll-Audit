@@ -31,23 +31,28 @@ For a deep dive into the calculus and linear algebra powering our feature extrac
 ## Quick Start
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/Kunal-Somani/TruthTag-Toll-Audit.git
 cd TruthTag-Toll-Audit
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Run the Dashboard
+
 ```bash
 streamlit run app.py
 ```
 
 ### 4. Presenting (Local Area Network)
+
 To demo the system from your laptop to another device over the same Wi-Fi network, start the server using the port flag:
+
 ```bash
 streamlit run app.py --server.port 8501
 ```
@@ -56,5 +61,5 @@ streamlit run app.py --server.port 8501
 
 | Name | GitHub | LinkedIn |
 | :--- | :--- | :--- |
-| **Kunal Somani** | [GitHub Profile](https://github.com/Kunal-Somani) | [LinkedIn Profile](#) |
-| **Ujjwal** | [GitHub Profile](#) | [LinkedIn Profile](#) |
+| **Kunal** | [GitHub Profile](https://github.com/Kunal-Somani) | [LinkedIn Profile](#) |
+| **Ujjwal Aggarwal** | [GitHub Profile](#) | [LinkedIn Profile](#) |
