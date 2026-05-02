@@ -6,3 +6,4 @@ outputs.zip
 venv/
 .vscode/
 *.npz
+.vscode/
